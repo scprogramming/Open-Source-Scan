@@ -1,34 +1,23 @@
-import os
+from gradleFunctions import *
+from sqlHandler import sqlHandler
 
 rootdir = 'C:\source\Python\Open Source Learning Set\Java\spring-boot-master'
-fileList = []
+sqlDatabase = sqlHandler()
 
-for subdir,dirs,files in os.walk(rootdir):
-    for file in files:
-        if "build.gradle" in file:
-            fileList.append(os.path.join(subdir,file))
 
-for files in fileList:
-    dependencyList = []
-    inDependency = False
-    bracketCount = 0
+fileList = findGradleFiles(rootdir)
 
-    f = open(files,"r")
-    for lines in f.readlines():
-        if inDependency:
-            if "{" in lines:
-                bracketCount += 1
-            if "}" in lines:
-                bracketCount -= 1
+dependencies = getAllDependencies(fileList)
 
-            if bracketCount == 0:
-                inDependency = False
-            else:
-                dependencyList.append(lines.strip())
-        if "dependencies {" in lines:
-            inDependency = True
-            bracketCount += 1
+allFiles = getAllSourceCode(rootdir)
 
-    print(files)
-    for lines in dependencyList:
-        print(lines)
+importDict = getAllImports(allFiles)
+
+for keys in dependencies.keys():
+    print(dependencies[keys])
+
+#for keys in importDict.keys():
+    #print('"' + keys.strip()+ '"')
+
+
+
