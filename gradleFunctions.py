@@ -48,7 +48,7 @@ def getAllDependencies(fileList):
     for files in fileList:
         depList = parseDependencies(files)
         for lines in depList:
-            if "(" in lines:
+            if "(" in lines and "project(" not in lines:
                 identifier = lines[0:lines.index("(")].strip()
                 if '"' in lines and '")' in lines:
                     depString = lines[lines.index('"')+1:lines.index('")')]

@@ -12,15 +12,18 @@ projectBuildTool = "Gradle"
 
 if userIn == "create":
 
-    createNewProject(projectName,projectLanguage,projectBuildTool,sqlDatabase,rootdir)
+    projectId, scanId = createNewProject(projectName,projectLanguage,projectBuildTool,sqlDatabase,rootdir)
     fileList = findGradleFiles(rootdir)
     dependencies = getAllDependencies(fileList)
     allFiles = getAllSourceCode(rootdir)
     importDict = getAllImports(allFiles)
 
     mappedDependencies,importDict = getMappedDependencies(dependencies,importDict)
-    
 
+    consolidatedDependencies = indexMappedDependencies(mappedDependencies)
+
+    for values in consolidatedDependencies.keys():
+        print(values)
 
 
 

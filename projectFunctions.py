@@ -11,6 +11,8 @@ def createNewProject(projectName,projectLanguage,projectBuildTool,sqlDatabase,ro
         INSERT INTO Scans VALUES(?,?)
         """, (scanId, projectId))
 
+    return projectId,scanId
+
 def getMappedDependencies(dependencies,importDict):
     mappedDependencies = []
     removeList = []
@@ -26,3 +28,17 @@ def getMappedDependencies(dependencies,importDict):
             del importDict[items]
 
     return mappedDependencies,importDict
+
+def indexMappedDependencies(mappedDependencies):
+    depDict = dict()
+
+    for items in mappedDependencies:
+        product = items[0]
+        productReference = items[1]
+
+        if product not in depDict:
+            depDict[product] = [productReference]
+        elif product in depDict:
+            depDict[product].append(productReference)
+
+    return depDict
