@@ -29,10 +29,8 @@ class sqlHandler:
         ProductName text,
         ImportName text,
         versionNumber text,
-        ImportsInProject text,
         ImportId int,
         CveId int,
-        CveCount int,
         CpeId int)
         ''')
 
@@ -50,7 +48,7 @@ class sqlHandler:
         ''')
 
         c.execute('''
-        CREATE TABLE IF NOT EXISTS cves(
+        CREATE TABLE IF NOT EXISTS cpes(
         CpeId int,
         Cpe text)
         ''')

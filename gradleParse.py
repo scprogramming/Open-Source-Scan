@@ -22,8 +22,31 @@ if userIn == "create":
 
     consolidatedDependencies = indexMappedDependencies(mappedDependencies)
 
-    for values in consolidatedDependencies.keys():
-        print(values)
+    importId = sqlDatabase.getNextId("Imports","ImportId")
+    cveId = sqlDatabase.getNextId("Cves",'CveId')
+    cpeId = sqlDatabase.getNextId("Cpes","CpeId")
+
+    for productName in consolidatedDependencies.keys():
+        imports = consolidatedDependencies[productName]
+        print(productName)
+
+        for entries in imports:
+            importName = entries.importLine
+            versionNumber = dependencies[productName].version
+
+            sqlDatabase.queryWithCommit("""
+            INSERT INTO ScanResults VALUES(?,?,?,?,?,?,?)
+            """,(scanId,productName,importName,
+                 versionNumber,importId,
+                 cveId,cpeId))
+
+            importId += 1
+
+        cveId += 1
+        cpeId += 1
+
+
+
 
 
 
