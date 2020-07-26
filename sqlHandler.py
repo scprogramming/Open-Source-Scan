@@ -67,3 +67,15 @@ class sqlHandler:
         c = self.conn.cursor()
         c.execute(sql,params)
         self.conn.commit()
+
+    def getNextId(self,table,Id):
+        c = self.conn.cursor()
+        data = c.execute("SELECT MAX(" + Id + ") FROM " + table)
+
+        for row in data:
+            if row[0] is None:
+                maxId = 1
+            else:
+                maxId = 1 + row[0]
+
+        return maxId

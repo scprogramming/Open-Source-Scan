@@ -1,6 +1,6 @@
 import os
 from gradleDependancy import gradleDep
-
+from importLine import importLine
 def getAllSourceCode(directory):
     fileList = []
 
@@ -51,7 +51,7 @@ def getAllDependencies(fileList):
             if "(" in lines:
                 identifier = lines[0:lines.index("(")].strip()
                 if '"' in lines and '")' in lines:
-                    depString = lines[lines.index('"'):lines.index('")')]
+                    depString = lines[lines.index('"')+1:lines.index('")')]
                     newDep = gradleDep()
 
                     depSplit = depString.split(":")
@@ -69,16 +69,26 @@ def getAllDependencies(fileList):
                         newDep.dependencyType = identifier
 
                     if newDep.codeImport not in dependencies:
+                        newDep.gradleBuildFile = files
                         dependencies[newDep.codeImport] = newDep
     return dependencies
 
 def getAllImports(allFiles):
     importDict = dict()
+
     for file in allFiles:
+        lineNumber = 0
         f = open(file, "r", encoding='utf-8')
         for lines in f.readlines():
+            lines = lines.strip()
+            lineNumber += 1
             if "import" in lines.split(" ")[0]:
                 if lines not in importDict:
-                    importDict[lines] = lines
+                    line = importLine()
+                    line.importLine = lines
+                    line.importFile[file] = lineNumber
+                    importDict[lines] = line
+                else:
+                    importDict[lines].importFile[file] = lineNumber
 
     return importDict
