@@ -10,47 +10,60 @@ class sqlHandler:
         c = self.conn.cursor()
         c.execute('''
         CREATE TABLE IF NOT EXISTS Projects(
-        Id text PRIMARY KEY,
+        Id int PRIMARY KEY,
         ProjectName text,
         ProjectLocation text,
-        ProjectLanguage text)
+        ProjectLanguage text,
+        ProjectBuildTool text)
         ''')
 
         c.execute('''
         CREATE TABLE IF NOT EXISTS Scans(
-        ScanId text PRIMARY KEY,
+        ScanId int PRIMARY KEY,
         ProjectId text)
         ''')
 
         c.execute('''
         CREATE TABLE IF NOT EXISTS ScanResults(
-        ScanId text,
+        ScanId int,
         ProductName text,
         ImportName text,
         versionNumber text,
         ImportsInProject text,
-        ImportId text,
-        CveId text,
-        CveCount text,
-        CpeId text)
+        ImportId int,
+        CveId int,
+        CveCount int,
+        CpeId int)
         ''')
 
         c.execute('''
         CREATE TABLE IF NOT EXISTS imports(
-        ImportId text,
+        ImportId int,
         FileName text,
         FileLocation text,
         LineNumberReference text)''')
 
         c.execute('''
         CREATE TABLE IF NOT EXISTS cves(
-        CveId text,
+        CveId int,
         CveNumber text)
         ''')
 
         c.execute('''
         CREATE TABLE IF NOT EXISTS cves(
-        CpeId text,
+        CpeId int,
         Cpe text)
         ''')
 
+        self.conn.commit()
+
+    def queryWithReturn(self,sql,params):
+        c = self.conn.cursor()
+        result = c.execute(sql,params)
+
+        return result
+
+    def queryWithCommit(self,sql,params):
+        c = self.conn.cursor()
+        c.execute(sql,params)
+        self.conn.commit()
