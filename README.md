@@ -16,7 +16,7 @@ python3 __init__.py
 
 Once this is done, you can access the web interface for the project through 127.0.0.1:5000
 
-###Features and Usage
+## Features and Usage
 Currently, the following features are implemented in Open Source Detector:
 	1. The ability to scan multiple projects multiple times for dependencies
 	2. Generate a list of dependencies, where they are located, the versions if available, and potential CVEs that exist in the open source.
