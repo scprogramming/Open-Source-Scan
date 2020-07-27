@@ -43,6 +43,7 @@ if userIn == "create":
 
             importId += 1
 
+        getRelatedCpeData(dependencyName)
         cveId += 1
         cpeId += 1
 

@@ -1,3 +1,5 @@
+import re
+
 def createNewProject(projectName,projectLanguage,projectBuildTool,sqlDatabase,rootdir):
     projectId = sqlDatabase.getNextId("Projects", "Id")
 
@@ -42,3 +44,8 @@ def indexMappedDependencies(mappedDependencies):
             depDict[product].append(productReference)
 
     return depDict
+
+def getRelatedCpeData(productName):
+
+    return []
+
