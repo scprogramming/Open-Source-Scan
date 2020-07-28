@@ -65,10 +65,12 @@ if userIn == "create":
             ''',(cpeId,cpes))
 
         cveList = getRelatedCveData(cpeList,sqlDatabase)
-
+        cvesInserted = dict()
         for cves in cveList:
-            sqlDatabase.queryWithCommit('''
-            INSERT INTO cves VALUES(?,?)''',(cveId,cves))
+            if cves not in cvesInserted:
+                sqlDatabase.queryWithCommit('''
+                INSERT INTO cves VALUES(?,?)''',(cveId,cves))
+                cvesInserted[cves] = cves
         cveId += 1
         cpeId += 1
 

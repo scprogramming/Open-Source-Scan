@@ -4,6 +4,34 @@ import sys
 
 app = Flask(__name__)
 
+@app.route("/showCveList/<cveId>")
+def showCveList(cveId):
+    sqlDatabase = sqlHandler()
+    results = sqlDatabase.queryWithReturn("SELECT * FROM cves WHERE cveId=?", (cveId,))
+
+    returnBody = '''
+                <html>
+                <body>
+                <table style="width:100%">
+                <tr>
+                    <th>CVE</th>
+                </tr>
+                '''
+
+    for row in results:
+        returnBody += '''
+            <tr>
+            <td>''' + row[1] + '''</td>
+            </tr>
+            '''
+
+    returnBody += '''
+                </table>
+                </body>
+                </html>'''
+
+    return returnBody
+
 @app.route("/showImportList/<importId>")
 def showImportList(importId):
     sqlDatabase = sqlHandler()
