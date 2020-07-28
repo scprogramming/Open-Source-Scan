@@ -43,7 +43,18 @@ if userIn == "create":
 
             importId += 1
 
-        getRelatedCpeData(dependencyName)
+        cpeList = getRelatedCpeData(dependencyName,sqlDatabase,versionNumber)
+
+        for cpes in cpeList:
+            sqlDatabase.queryWithCommit('''
+            INSERT INTO Cpes VALUES (?,?)
+            ''',(cpeId,cpes))
+
+        cveList = getRelatedCveData(cpeList)
+
+        for cves in cveList:
+            sqlDatabase.queryWithCommit('''
+            INSERT INTO cves VALUES(?,?)''',(cveId,cves))
         cveId += 1
         cpeId += 1
 

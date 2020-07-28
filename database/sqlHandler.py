@@ -62,8 +62,8 @@ class sqlHandler:
 
         c.execute('''
         CREATE TABLE IF NOT EXISTS nvdCpes(
-        Cpe text,
-        product text)
+        product text,
+        Cpe text)
         ''')
 
         if runCpe:
@@ -95,9 +95,6 @@ class sqlHandler:
         return maxId
 
     def setupCpeDatabase(self):
-
-        pattern = r"^(\d+\.)?(\d+\.)?(\d+\.)?(\*|\d+)$"
-        yearPattern = r"\b(19|20)\d{2}\b"
         f = open("../official-cpe-dictionary_v2.3.xml", "r", encoding="utf8")
 
         itemList = []
@@ -117,7 +114,7 @@ class sqlHandler:
         i = 0
 
         while i < len(itemList):
-            sql = "INSERT INTO nvdCpes VALUES(%s,%s)"
+            sql = "INSERT INTO nvdCpes VALUES(?,?)"
             if i + 50 < len(itemList):
                 cursor.executemany(sql, itemList[i:i + 50])
             else:

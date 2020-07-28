@@ -1,4 +1,4 @@
-import re
+import requests
 
 def createNewProject(projectName,projectLanguage,projectBuildTool,sqlDatabase,rootdir):
     projectId = sqlDatabase.getNextId("Projects", "Id")
@@ -45,7 +45,36 @@ def indexMappedDependencies(mappedDependencies):
 
     return depDict
 
-def getRelatedCpeData(productName):
+def getRelatedCpeData(productName,sqlDatabase,versionNumber):
+    data = sqlDatabase.queryWithReturn('''
+    SELECT * FROM nvdCpes WHERE product LIKE ?''',('%' + productName + '%',))
+    cpeList = []
 
-    return []
+    for rows in data:
+        rowSplit = rows[1].split(":")
 
+        if versionNumber != "":
+            if rowSplit[4] == productName and (rowSplit[5] == versionNumber or rowSplit[5] == "-"):
+                cpeList.append(rows[1])
+        else:
+            if rowSplit[4] == productName:
+                cpeList.append(rows[1])
+
+    return cpeList
+
+def getRelatedCveData(cpeList):
+    cveList = []
+
+    for cpes in cpeList:
+        response = requests.get("https://services.nvd.nist.gov/rest/json/cves/1.0?startIndex=0&resultsPerPage=20&cpeMatchString="+cpes)
+        data = response.json()
+
+        if response.status_code == 200:
+            totalResults = data['totalResults']
+            currentIndex = 0
+
+            for items in data['result']['CVE_Items']:
+                cveList.append(items['cve']['CVE_data_meta']['ID'])
+                #items['cve']['description'][0]['value']
+                #items['impact']['baseMetricV3']['cvssV3']['vectorString']
+    return cveList
