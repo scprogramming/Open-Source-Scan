@@ -4,6 +4,38 @@ import sys
 
 app = Flask(__name__)
 
+@app.route("/showImportList/<importId>")
+def showImportList(importId):
+    sqlDatabase = sqlHandler()
+    results = sqlDatabase.queryWithReturn("SELECT * FROM Imports WHERE ImportId=?", (importId,))
+
+    returnBody = '''
+            <html>
+            <body>
+            <table style="width:100%">
+            <tr>
+                <th>File Name</th>
+                <th>File Location</th>
+                <th>Line Number</th>
+            </tr>
+            '''
+
+    for row in results:
+        returnBody += '''
+        <tr>
+        <td>''' + row[1] + '''</td>
+        <td>''' + row[2] + '''</td>
+        <td>''' + row[3] + '''</td>
+        </tr>
+        '''
+
+    returnBody += '''
+            </table>
+            </body>
+            </html>'''
+
+    return returnBody
+
 @app.route("/loadScan/<scanId>")
 def loadScan(scanId):
     sqlDatabase = sqlHandler()
@@ -31,10 +63,16 @@ def loadScan(scanId):
                     <td>''' + str(row[3]) + '''</td>
                     <td>''' + str(row[7]) + '''</td>
                     <td><a href="/showImportList/''' +str(row[4]) + '''"> Click to view import list</td>
-                    <td><a href="/showCveList/''' +str(row[5]) + '''"> Click to view CVE list</td>
-                </tr>
+                    
                 '''
+        cveData = sqlDatabase.queryWithReturn('''
+        SELECT COUNT(*) FROM Cves WHERE CveId = ?''',(row[5],))
 
+        for res in cveData:
+            if res[0] >= 1:
+                returnBody += '''<td><a href="/showCveList/''' +str(row[5]) + '''"> Click to view CVE list</td></tr>'''
+            else:
+                returnBody += '<td>No CVEs Found</td></tr>'
     returnBody += '''
             </table>
             </body>

@@ -1,6 +1,7 @@
 from gradleParsing.gradleFunctions import *
 from database.sqlHandler import sqlHandler
 from projectFunctions import *
+import time
 
 rootdir = 'C:\source\Python\Open Source Learning Set\Java\spring-boot-master'
 sqlDatabase = sqlHandler()
@@ -13,14 +14,19 @@ projectBuildTool = "Gradle"
 if userIn == "create":
 
     projectId, scanId = createNewProject(projectName,projectLanguage,projectBuildTool,sqlDatabase,rootdir)
+
     fileList = findGradleFiles(rootdir)
+
     dependencies = getAllDependencies(fileList)
+
     allFiles = getAllSourceCode(rootdir)
+
     importDict = getAllImports(allFiles)
 
     mappedDependencies,importDict = getMappedDependencies(dependencies,importDict)
 
     consolidatedDependencies = indexMappedDependencies(mappedDependencies)
+
 
     importId = sqlDatabase.getNextId("Imports","ImportId")
     cveId = sqlDatabase.getNextId("Cves",'CveId')
@@ -41,6 +47,14 @@ if userIn == "create":
                  versionNumber,importId,
                  cveId,cpeId,dependencyName))
 
+            insertSet = []
+            for keys in entries.importFile:
+                insertSet.append((importId,keys,str(keys).rsplit("\\",1)[-1],entries.importFile[keys]))
+
+            sqlDatabase.queryManyWithCommit("""
+            INSERT INTO Imports VALUES(?,?,?,?)
+            """,insertSet)
+
             importId += 1
 
         cpeList = getRelatedCpeData(dependencyName,sqlDatabase,versionNumber)
@@ -50,7 +64,7 @@ if userIn == "create":
             INSERT INTO Cpes VALUES (?,?)
             ''',(cpeId,cpes))
 
-        cveList = getRelatedCveData(cpeList)
+        cveList = getRelatedCveData(cpeList,sqlDatabase)
 
         for cves in cveList:
             sqlDatabase.queryWithCommit('''

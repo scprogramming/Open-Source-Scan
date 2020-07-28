@@ -1,5 +1,3 @@
-import requests
-
 def createNewProject(projectName,projectLanguage,projectBuildTool,sqlDatabase,rootdir):
     projectId = sqlDatabase.getNextId("Projects", "Id")
 
@@ -62,19 +60,15 @@ def getRelatedCpeData(productName,sqlDatabase,versionNumber):
 
     return cpeList
 
-def getRelatedCveData(cpeList):
+def getRelatedCveData(cpeList,sqlDatabase):
     cveList = []
 
-    for cpes in cpeList:
-        response = requests.get("https://services.nvd.nist.gov/rest/json/cves/1.0?startIndex=0&resultsPerPage=20&cpeMatchString="+cpes)
-        data = response.json()
+    for cpe in cpeList:
+        data = sqlDatabase.queryWithReturn('''
+            SELECT * FROM nvdCve WHERE cpe=?
+        ''',(cpe,))
 
-        if response.status_code == 200:
-            totalResults = data['totalResults']
-            currentIndex = 0
+        for row in data:
+            cveList.append(row[0])
 
-            for items in data['result']['CVE_Items']:
-                cveList.append(items['cve']['CVE_data_meta']['ID'])
-                #items['cve']['description'][0]['value']
-                #items['impact']['baseMetricV3']['cvssV3']['vectorString']
     return cveList
